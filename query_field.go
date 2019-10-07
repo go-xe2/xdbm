@@ -20,36 +20,36 @@ type QueryField interface {
 
 type queryFieldImp struct {
 	// 规则，MD,ML,UD,UL,GD,GL,S
-	rules 		[]string
+	Rules 		[]string
 	// 字段查询表达式
-	express 	string
+	Express 	string
 	// 如果是关联表字段，则有该值
-	joinTable	string
+	JoinTable	string
 	// 关系表达式
-	join []string
+	Join []string
 }
 
 // 创建查询字段
 func NewQueryField(rules string, express string, joinTable string, join []string) QueryField {
 	arr := strings.Split(strings.ToUpper(rules), ",")
 	return &queryFieldImp{
-		rules: 			arr,
-		express: 		express,
-		joinTable: 		joinTable,
-		join: 			join,
+		Rules: 			arr,
+		Express: 		express,
+		JoinTable: 		joinTable,
+		Join: 			join,
 	}
 }
 
 func (f *queryFieldImp) GetRules() []string {
-	return f.rules
+	return f.Rules
 }
 
 func (f *queryFieldImp) HasRule(rule string) bool {
-	s := strings.Join(f.rules, "")
+	s := strings.Join(f.Rules, "")
 	if s == "" || s == "S" {
 		return true
 	}
-	for _, s := range f.rules {
+	for _, s := range f.Rules {
 		if strings.ToUpper(s) == strings.ToUpper(rule) {
 			return true
 		}
@@ -58,13 +58,13 @@ func (f *queryFieldImp) HasRule(rule string) bool {
 }
 
 func (f *queryFieldImp) GetExpress() string {
-	return f.express
+	return f.Express
 }
 
 func (f *queryFieldImp) GetJoinTable() string {
-	return f.joinTable
+	return f.JoinTable
 }
 
 func (f *queryFieldImp) GetJoin() []string {
-	return f.join
+	return f.Join
 }

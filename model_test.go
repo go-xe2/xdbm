@@ -1,6 +1,9 @@
 package xdbm
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 type userModel struct {
 	Model
@@ -19,13 +22,35 @@ func (m *userModel) AliasName() string {
 }
 
 var userModelFields = map[string]interface{}{
-	"user_id": 1,
-	"sex": "",
-	"product_id": "-",
-	"name": "name",
-	"is_delete": "-",
-	"status": []interface{}{"S", `case $1.status when 0 then '正常' when 1 then '删除' end`, "status_name"},
-	"up_date": []interface{}{"ML,UL,GL", `from_unixtime($1.up_date,'%Y-%m-%d %H:%i:%s')`, "up_date"},
+	"user_id": 		"user_id",
+	"login_name": 	"login_name",
+	"nick_name": 	[]interface{}{"", "from_base64($1.nick_name)", "nick_name"},
+	"pwd": 			"-",
+	"enc": 			"-",
+	"sex": 			[]interface{}{ "S",`case $1.sex when 0 then "未知" when 1 then "男" when 2 then "女" end`, "sex_name" },
+	"mobile": 		"mobile",
+	"qq": 			"qq",
+	"province": 	"province",
+	"city": 		"city",
+	"county": 		"county",
+	"town": 		"town",
+	"province_id": 	"-",
+	"city_id": 		"-",
+	"county_id": 	"-",
+	"town_id": 		"-",
+	"address": 		"address",
+	"head": 		"head",
+	"cr_date": 		[]interface{}{ "ML,UL,GL,MD", "from_unixtime($1.cr_date)" },
+	"up_date": 		[]interface{}{ "ML,UL,GL,MD", "from_unixtime($1.up_date)" },
+	"last_login": 	[]interface{}{ "ML,MD", "from_unixtime($1.last_login)" },
+	"last_ip": 		[]interface{}{ "ML,MD" },
+	"status": 		[]interface{}{ "ML,MD", "case $1.status when 0 then '未审核' when 1 then '审核失败' when 2 then '审核通过' when 3 then '锁定' end", "status_name" },
+	"fav_count": 	"fav_count",
+	"visit_count": 	"visit_count",
+	"audit_id":		[]interface{}{ "ML,MD" },
+	"audit_summery":[]interface{}{ "ML,MD" },
+	"audit_date":	[]interface{}{ "ML,MD", "case when $1.audit_date > 0 then from_unixtime($1.audit_date) else '' end", "audit_date" },
+	"is_expert": 	"is_expert",
 	"product_name":  NewModelRelation("MD", newProductModel(), "$1.product_id=$2.product_id","left join", "$2.name + $1.name"),
 }
 
@@ -128,6 +153,10 @@ func (m *productModel) AllowSortFields() map[string]bool {
 
 func TestModel_Select(t *testing.T) {
 	u := newUserModel()
+
+	modelFields := GetModelFields(u)
+	bytes, err := json.Marshal(modelFields)
+	t.Log("model fields:", string(bytes), ", error:", err, "\n")
 
 	fields, joins := GetQueryFields(u, "", )
 	t.Log("fields1:", fields, ",joins:", joins)

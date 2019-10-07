@@ -56,7 +56,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 				continue
 			}
 			fdName := fmt.Sprintf("%s.%s", modelAlias, key)
-			if val != "" {
+			if val != "" && val != key {
 				fdName = fmt.Sprintf("%s.%s as %s", modelAlias, key, val)
 			}
 			item := NewQueryField("", fdName, "", nil)
@@ -103,7 +103,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 			case 1:
 				var item QueryField
 				if s, ok := val[0].(string); ok {
-					item = NewQueryField(s, fmt.Sprintf("%s.%s",modelAlias, s), "", nil)
+					item = NewQueryField(s, fmt.Sprintf("%s.%s",modelAlias, key), "", nil)
 				} else {
 					item = NewQueryField("", fmt.Sprintf("%s.%s", modelAlias, key), "", nil)
 				}
