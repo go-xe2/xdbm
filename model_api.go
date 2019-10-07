@@ -182,7 +182,7 @@ func Query(query xorm.IOrm, m IModel, rule string, selects ...interface{}) xorm.
 	query = query.Fields(fields)
 	if len(joins) > 0 {
 		for _, join := range joins {
-			query = query.Join(join[0], []interface{}{join[1], join[2]})
+			query = query.Join(join[2], join[0], join[1])
 		}
 	}
 	return query
