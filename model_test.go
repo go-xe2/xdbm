@@ -33,18 +33,51 @@ func (m *userModel) Fields() map[string]interface{} {
 	return userModelFields
 }
 
+func (m *userModel) Field(fieldName string) string {
+	return m.AliasName() + "." + fieldName
+}
+
 func (m *userModel) AppendRules() []string {
-	return nil
+	return []string{
+		"^login_name?loginName!required#登录名不能为空",
+		"^nick_name?nickName!required#昵称不能为空",
+		"^mobile!required|phone#手机号不能为空|不是有效的手机号",
+		"^pwd?pwd!password2#请输入6-18数字和大小写字母组合的密码",
+		"^sex~0",
+		"^head~",
+		"^province&string!required#省份不能为空",
+		"^city&string!required#城市不能为空",
+		"^county&string!required#区县不能为空",
+	}
 }
 
 // 更新规则
 func (m *userModel) UpdateRules() []string {
-	return nil
+	return []string{
+		"^login_name?loginName!required#登录名不能为空",
+		"^nick_name?nickName!required#昵称不能为空",
+		"^mobile!required|phone#手机号不能为空|不是有效的手机号",
+		"^pwd?pwd!password2#请输入6-18数字和大小写字母组合的密码",
+		"^sex~0",
+		"^head~",
+		"^province&string!required#省份不能为空",
+		"^city&string!required#城市不能为空",
+		"^county&string!required#区县不能为空",
+	}
 }
 
 // 允许排序字段
 func (m *userModel) AllowSortFields() map[string]bool {
-	return nil
+	return map[string]bool {
+		"cr_date": true,
+		"up_date": true,
+		"fav_count": true,
+		"visit_count": true,
+		"discuss_count": true,
+		"province": true,
+		"city": true,
+		"county": true,
+	}
 }
 
 
@@ -62,6 +95,10 @@ func (m *productModel) TableName() string {
 
 func (m *productModel) AliasName() string {
 	return "p"
+}
+
+func (m *productModel) Field(fieldName string) string {
+	return m.AliasName() + "." + fieldName
 }
 
 var productModelFields = map[string]interface{}{
@@ -93,20 +130,31 @@ func TestModel_Select(t *testing.T) {
 	u := newUserModel()
 
 	fields, joins := GetQueryFields(u, "", )
-	t.Log("fields:", fields, ",joins:", joins)
+	t.Log("fields1:", fields, ",joins:", joins)
 
 	fields, joins = GetQueryFields(u, "", "product_name")
-	t.Log("fields:", fields, ",joins:", joins)
+	t.Log("fields2:", fields, ",joins:", joins)
 
 	fields, joins = GetQueryFields(u, "", "user_id,cr_date,product_name")
-	t.Log("fields:", fields, ",joins:", joins)
+	t.Log("fields3:", fields, ",joins:", joins)
 
 	fields, joins = GetQueryFields(u, "GD")
-	t.Log("fields:", fields, ",joins:", joins)
+	t.Log("fields4:", fields, ",joins:", joins)
 
 	fields, joins = GetQueryFields(u, "MD")
-	t.Log("fields:", fields, ",joins:", joins)
+	t.Log("fields5:", fields, ",joins:", joins)
 
+	if i,ok := u.(IModelMutation); ok {
+		rule1 := i.AppendRules()
+		t.Log("append rules:", rule1)
+
+		rule2 := i.UpdateRules()
+		t.Log("update rules:", rule2)
+	}
+	if i, ok := u.(IModelQuery); ok {
+		fields := i.AllowSortFields()
+		t.Log("allow sorts:", fields)
+	}
 	// Output:
 
 }
