@@ -51,7 +51,7 @@ var userModelFields = map[string]interface{}{
 	"audit_summery":[]interface{}{ "ML,MD" },
 	"audit_date":	[]interface{}{ "ML,MD", "case when $1.audit_date > 0 then from_unixtime($1.audit_date) else '' end", "audit_date" },
 	"is_expert": 	"is_expert",
-	"product_name":  NewModelRelation("MD", newProductModel(), "$1.product_id=$2.product_id","left join", "$2.name + $1.name"),
+	"product_name":  NewModelRelation("MD", newProductModel(), "$1.product_id=$2.product_id","left", "$2.name + $1.name"),
 }
 
 func (m *userModel) Fields() map[string]interface{} {

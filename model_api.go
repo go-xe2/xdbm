@@ -127,6 +127,7 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 		case string:
 			arr := strings.Split(val, ",")
 			for _, k := range arr {
+				k = strings.Trim(k, " ")
 				selects[k] = true
 			}
 			break
@@ -167,7 +168,11 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 	for _, item := range joinTables {
 		joins = append(joins, item)
 	}
-	return strings.Join(results, ","), joins
+	if len(results) > 0 {
+		return strings.Join(results, ","), joins
+	} else {
+		return "*", joins
+	}
 }
 
 // 查询模型字段
