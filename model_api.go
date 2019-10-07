@@ -3,6 +3,7 @@ package xdbm
 import (
 "fmt"
 "strings"
+"github.com/go-xe2/xorm"
 )
 
 var (
@@ -169,3 +170,20 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 	return strings.Join(results, ","), joins
 }
 
+// 查询模型字段
+func Select(db xorm.IOrm, m IModel, rule string, selects ...interface{}) xorm.IOrm  {
+	query := db.Table(m.TableAlias())
+	return Query(query, m, rule, selects...)
+}
+
+// 生成查询字段及join配置
+func Query(query xorm.IOrm, m IModel, rule string, selects ...interface{}) xorm.IOrm  {
+	fields, joins := GetQueryFields(m, rule, selects...)
+	query = query.Fields(fields)
+	if len(joins) > 0 {
+		for _, join := range joins {
+			query = query.Join(join[0], join[1], join[2])
+		}
+	}
+	return query
+}
