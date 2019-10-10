@@ -49,7 +49,7 @@ func (f *queryFieldImp) HasRule(rule string) bool {
 	if rule == "S" {
 		return strings.Index(s, rule) >= 0
 	}
-	return s == "" || strings.Index(s, rule) >= 0
+	return s == "" || s == "S" || strings.Index(s, rule) >= 0
 }
 
 func (f *queryFieldImp) GetExpress() string {
