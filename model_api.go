@@ -153,6 +153,9 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 					joinTables[joinTable] = q.GetJoin()
 				}
 				results = append(results, q.GetExpress())
+				if q.HasRule("S") && q.GetExpress() != key {
+					results = append(results, fmt.Sprintf("%s.%s", m.AliasName(), key))
+				}
 			}
 			continue
 		}

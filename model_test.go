@@ -161,7 +161,7 @@ func TestModel_Select(t *testing.T) {
 	fields, joins := GetQueryFields(u, "MD", )
 	t.Log("fields1:", fields, ",joins:", joins)
 
-	fields, joins = GetQueryFields(u, "", "product_name")
+	fields, joins = GetQueryFields(u, "", "product_name,status")
 	t.Log("fields2:", fields, ",joins:", joins)
 
 	fields, joins = GetQueryFields(u, "", "user_id,cr_date,product_name")
