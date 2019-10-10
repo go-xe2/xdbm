@@ -1,8 +1,9 @@
 package xdbm
 
 import (
-"fmt"
-"strings"
+	"fmt"
+	"github.com/go-xe2/xorm"
+	"strings"
 )
 
 var (
@@ -55,7 +56,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 				continue
 			}
 			fdName := fmt.Sprintf("%s.%s", modelAlias, key)
-			if val != "" {
+			if val != "" && val != key {
 				fdName = fmt.Sprintf("%s.%s as %s", modelAlias, key, val)
 			}
 			item := NewQueryField("", fdName, "", nil)
@@ -102,7 +103,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 			case 1:
 				var item QueryField
 				if s, ok := val[0].(string); ok {
-					item = NewQueryField(s, fmt.Sprintf("%s.%s",modelAlias, s), "", nil)
+					item = NewQueryField(s, fmt.Sprintf("%s.%s",modelAlias, key), "", nil)
 				} else {
 					item = NewQueryField("", fmt.Sprintf("%s.%s", modelAlias, key), "", nil)
 				}
@@ -126,6 +127,7 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 		case string:
 			arr := strings.Split(val, ",")
 			for _, k := range arr {
+				k = strings.Trim(k, " ")
 				selects[k] = true
 			}
 			break
@@ -169,6 +171,27 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 	for _, item := range joinTables {
 		joins = append(joins, item)
 	}
-	return strings.Join(results, ","), joins
+	if len(results) > 0 {
+		return strings.Join(results, ","), joins
+	} else {
+		return "*", joins
+	}
 }
 
+// 查询模型字段
+func Select(db xorm.IOrm, m IModel, rule string, selects ...interface{}) xorm.IOrm  {
+	query := db.Table(m.TableAlias())
+	return Query(query, m, rule, selects...)
+}
+
+// 生成查询字段及join配置
+func Query(query xorm.IOrm, m IModel, rule string, selects ...interface{}) xorm.IOrm  {
+	fields, joins := GetQueryFields(m, rule, selects...)
+	query = query.Fields(fields)
+	if len(joins) > 0 {
+		for _, join := range joins {
+			query = query.Join(join[2], join[0], join[1])
+		}
+	}
+	return query
+}

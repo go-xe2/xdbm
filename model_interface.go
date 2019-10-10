@@ -10,4 +10,6 @@ type IModel interface {
 	TableAlias(alias ...string) string
 	// 字段列表
 	Fields() map[string]interface{}
+	// 带字段别名
+	Field(fieldName string) string
 }
