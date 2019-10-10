@@ -46,15 +46,10 @@ func (f *queryFieldImp) GetRules() []string {
 
 func (f *queryFieldImp) HasRule(rule string) bool {
 	s := strings.Join(f.Rules, "")
-	if s == "" || s == "S" {
-		return true
+	if rule == "S" {
+		return strings.Index(s, rule) >= 0
 	}
-	for _, s := range f.Rules {
-		if strings.ToUpper(s) == strings.ToUpper(rule) {
-			return true
-		}
-	}
-	return false
+	return s == "" || strings.Index(s, rule) >= 0
 }
 
 func (f *queryFieldImp) GetExpress() string {
