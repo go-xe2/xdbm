@@ -24,7 +24,7 @@ var userModelFields = map[string]interface{}{
 	"product_id": "-",
 	"name": "name",
 	"is_delete": "-",
-	"status": []interface{}{"S", `case $1.status when 0 then '正常' when 1 then '删除' end`, "status_name"},
+	"status": []interface{}{"MD,ML,S", `case $1.status when 0 then '正常' when 1 then '删除' end`, "status_name"},
 	"up_date": []interface{}{"ML,UL,GL", `from_unixtime($1.up_date,'%Y-%m-%d %H:%i:%s')`, "up_date"},
 	"product_name":  NewModelRelation("MD", newProductModel(), "$1.product_id=$2.product_id","left join", "$2.name + $1.name"),
 }
@@ -92,7 +92,7 @@ func (m *productModel) AllowSortFields() map[string]bool {
 func TestModel_Select(t *testing.T) {
 	u := newUserModel()
 
-	fields, joins := GetQueryFields(u, "", )
+	fields, joins := GetQueryFields(u, "MD", )
 	t.Log("fields:", fields, ",joins:", joins)
 
 	fields, joins = GetQueryFields(u, "", "product_name")
