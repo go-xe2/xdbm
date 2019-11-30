@@ -13,6 +13,7 @@ type QueryField interface {
 	GetExpress() string
 	// 获取关系表
 	GetJoinTable() string
+	GetTableAlias() string
 	// 获取关系表达式
 	GetJoin() []string
 }
@@ -25,18 +26,20 @@ type queryFieldImp struct {
 	Express 	string
 	// 如果是关联表字段，则有该值
 	JoinTable	string
+	TableAlias string
 	// 关系表达式
 	Join []string
 }
 
 // 创建查询字段
-func NewQueryField(rules string, express string, joinTable string, join []string) QueryField {
+func NewQueryField(rules string, express string, joinTable string, alias string, join []string) QueryField {
 	arr := strings.Split(strings.ToUpper(rules), ",")
 	return &queryFieldImp{
 		Rules: 			arr,
 		Express: 		express,
 		JoinTable: 		joinTable,
 		Join: 			join,
+		TableAlias: alias,
 	}
 }
 
@@ -58,6 +61,10 @@ func (f *queryFieldImp) GetExpress() string {
 
 func (f *queryFieldImp) GetJoinTable() string {
 	return f.JoinTable
+}
+
+func (f *queryFieldImp) GetTableAlias() string {
+	return f.TableAlias
 }
 
 func (f *queryFieldImp) GetJoin() []string {

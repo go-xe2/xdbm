@@ -47,7 +47,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 				joinOn,
 				joinType,
 			}
-			item := NewQueryField(rule, sqlExpr, joinTable, join)
+			item := NewQueryField(rule, sqlExpr, joinTable, joinAlias, join)
 			results[key] = item
 			break
 		case string:
@@ -59,7 +59,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 			if val != "" && val != key {
 				fdName = fmt.Sprintf("%s.%s as %s", modelAlias, key, val)
 			}
-			item := NewQueryField("", fdName, "", nil)
+			item := NewQueryField("", fdName, "", "", nil)
 			results[key] = item
 			break
 		case []interface{}:
@@ -83,7 +83,7 @@ func GetModelFields(m IModel) map[string]QueryField {
 							sqlExpr = fmt.Sprintf("%s as %s", expr, alias)
 						}
 					}
-					item := NewQueryField(rule, sqlExpr, "", nil)
+					item := NewQueryField(rule, sqlExpr, "", "", nil)
 					results[key] = item
 				}
 				break
@@ -96,16 +96,16 @@ func GetModelFields(m IModel) map[string]QueryField {
 					if expr != key {
 						sqlExpr = fmt.Sprintf("%s as %s", expr, key)
 					}
-					item := NewQueryField(rule, sqlExpr, "", nil)
+					item := NewQueryField(rule, sqlExpr, "", "", nil)
 					results[key] = item
 				}
 				break
 			case 1:
 				var item QueryField
 				if s, ok := val[0].(string); ok {
-					item = NewQueryField(s, fmt.Sprintf("%s.%s",modelAlias, key), "", nil)
+					item = NewQueryField(s, fmt.Sprintf("%s.%s",modelAlias, key), "", "", nil)
 				} else {
-					item = NewQueryField("", fmt.Sprintf("%s.%s", modelAlias, key), "", nil)
+					item = NewQueryField("", fmt.Sprintf("%s.%s", modelAlias, key), "", "", nil)
 				}
 				results[key] = item
 				break
@@ -162,7 +162,8 @@ func GetQueryFields(m IModel, rule string, selectFields ...interface{}) (string,
 		if rule == "" || q.HasRule(rule) {
 			joinTable := q.GetJoinTable()
 			if joinTable != "" {
-				joinTables[joinTable] = q.GetJoin()
+				alias := q.GetTableAlias()
+				joinTables[joinTable + " " + alias] = q.GetJoin()
 			}
 			results = append(results, q.GetExpress())
 		}
